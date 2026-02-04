@@ -34,3 +34,5 @@
 .vs/*
 Duelists/*
 x64/*
+
+.idea/*
