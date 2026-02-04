@@ -23,8 +23,16 @@ set(HEADERS
     Player.h
 )
 
+find_package(glfw3 CONFIG REQUIRED)
+
+# Find raylib
+find_package(raylib CONFIG REQUIRED)
+
 # Create executable
 add_executable(Duelists ${SOURCES} ${HEADERS})
+
+# Link raylib
+target_link_libraries(Duelists PRIVATE raylib glfw)
 
 # Compiler options
 if(MSVC)

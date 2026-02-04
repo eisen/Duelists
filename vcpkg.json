@@ -1,0 +1,12 @@
+{
+  "name" : "duelists",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "4acadb7d732e662bbf130c4849be6d3a0aa6f6b9",
+  "dependencies" : [ {
+    "name" : "raylib",
+    "version>=" : "5.5"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.4#1"
+  } ]
+}

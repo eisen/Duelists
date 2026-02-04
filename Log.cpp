@@ -1,14 +1,25 @@
-#include "Log.h"
 #include <iostream>
+#include <raylib.h>
+#include <map>
+
+#include "Log.h"
 
 std::vector<LogEntry> Log::logEntries;
+int Log::posY;
+
+std::map<LogType, Color> levelToColor {
+    {Default, WHITE},
+    {INFO, GREEN},
+    {WARNING, ORANGE},
+    {ERROR, RED}
+};
 
 void Log::INFO(const std::string& msg, bool preSpaced, bool postSpaced)
 {
     LogEntry entry;
 
     entry.type = LogType::INFO;
-    entry.message = "\x1B[32m[INFO]\t" + msg;
+    entry.message = msg;
     entry.preSpaced = preSpaced;
     entry.postSpaced = postSpaced;
 
@@ -21,7 +32,7 @@ void Log::WARNING(const std::string& msg, bool preSpaced, bool postSpaced)
     LogEntry entry;
 
     entry.type = LogType::WARNING;
-    entry.message = "\x1B[33m[WARNING]\t" + msg;
+    entry.message = msg;
     entry.preSpaced = preSpaced;
     entry.postSpaced = postSpaced;
 
@@ -34,7 +45,7 @@ void Log::ERROR(const std::string& msg, bool preSpaced, bool postSpaced)
     LogEntry entry;
 
     entry.type = LogType::ERROR;
-    entry.message = "\x1B[91m[ERROR]\t" + msg;
+    entry.message = msg;
     entry.preSpaced = preSpaced;
     entry.postSpaced = postSpaced;
 
@@ -44,20 +55,32 @@ void Log::ERROR(const std::string& msg, bool preSpaced, bool postSpaced)
 
 void Log::SEPARATOR()
 {
-    std::cout << "----------------------------------------" << std::endl;
+    PrintLog({ LogType::Default, "----------------------------------------", false, false });
+}
+
+void Log::Init()
+{
+    logEntries.clear();
+    posY = 20;
 }
 
 void Log::PrintLog(LogEntry entry)
 {
     if (entry.preSpaced)
     {
-        std::cout << std::endl;
+        posY += 20;
     }
 
-    std::cout << entry.message << +"\x1B[0m" << std::endl;
+    DrawText(entry.message.c_str(), 20, posY, 20, levelToColor[entry.type]);
+    posY += 20;
 
     if (entry.postSpaced)
     {
-        std::cout << std::endl;
+        posY += 20;
+    }
+
+    if (posY > 600)
+    {
+        posY = 20;
     }
 }

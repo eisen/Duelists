@@ -4,7 +4,8 @@
 
 enum LogType
 {
-    INFO = 0,
+    Default = 0,
+    INFO,
     WARNING,
     ERROR
 };
@@ -19,8 +20,11 @@ struct LogEntry
 
 class Log
 {
-public:
     static std::vector<LogEntry> logEntries;
+    static int posY;
+
+public:
+    static void Init();
     static void INFO(const std::string& msg, bool preSpaced = false, bool postSpaced = false);
     static void WARNING(const std::string& msg, bool preSpaced = false, bool postSpaced = false);
     static void ERROR(const std::string& msg, bool preSpaced = false, bool postSpaced = false);
