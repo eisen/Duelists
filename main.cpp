@@ -212,6 +212,14 @@ int main()
 
     auto background = LoadTexture("../SourceArt/Arena.png");
 
+    //-- Hero Sprite
+    auto heroSprite = LoadTexture("../SourceArt/Characters/Knight/Knight_IdleBlinking_Sprite.png");
+    Rectangle heroFrameRec = { 0.0f, 0.0f, (float)heroSprite.width/4, (float)heroSprite.height/3 };
+
+    //-- Goblin Sprite
+    auto goblinSprite = LoadTexture("../SourceArt/Characters/Goblin/Goblin_IdleBlinking_Sprite.png");
+    Rectangle goblinFrameRec = { 0.0f, 0.0f, (float)-goblinSprite.width/4, (float)goblinSprite.height/3 };
+
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -227,6 +235,8 @@ int main()
         ClearBackground(BLACK);
 
         DrawTexture(background, 0, 0, WHITE);
+        DrawTextureRec(heroSprite, heroFrameRec, (Vector2){ 150, 170 }, WHITE);
+        DrawTextureRec(goblinSprite, goblinFrameRec, (Vector2){ 650 + goblinFrameRec.width, 170 }, WHITE);
 
         Log::Init();
 
@@ -246,6 +256,7 @@ int main()
 
     // De-Initialization
     UnloadTexture(background);
+    UnloadTexture(heroSprite);
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
