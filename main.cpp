@@ -210,6 +210,8 @@ int main()
     Player player("Hero", 5, 2, 2, 2);
     Enemy enemy("Goblin", 1, 2, 0, 1);
 
+    auto background = LoadTexture("../SourceArt/Arena.png");
+
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -223,6 +225,8 @@ int main()
         BeginDrawing();
 
         ClearBackground(BLACK);
+
+        DrawTexture(background, 0, 0, WHITE);
 
         Log::Init();
 
@@ -241,6 +245,7 @@ int main()
     }
 
     // De-Initialization
+    UnloadTexture(background);
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------

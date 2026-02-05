@@ -7,6 +7,9 @@
 std::vector<LogEntry> Log::logEntries;
 int Log::posY;
 
+#define LINE_HEIGHT 15
+#define LINE_HEIGHT 14
+
 std::map<LogType, Color> levelToColor {
     {Default, WHITE},
     {INFO, GREEN},
@@ -61,26 +64,26 @@ void Log::SEPARATOR()
 void Log::Init()
 {
     logEntries.clear();
-    posY = 20;
+    posY = 400;
 }
 
 void Log::PrintLog(LogEntry entry)
 {
     if (entry.preSpaced)
     {
-        posY += 20;
+        posY += LINE_HEIGHT;
     }
 
-    DrawText(entry.message.c_str(), 20, posY, 20, levelToColor[entry.type]);
-    posY += 20;
+    DrawText(entry.message.c_str(), 20, posY, LINE_HEIGHT, levelToColor[entry.type]);
+    posY += LINE_HEIGHT;
 
     if (entry.postSpaced)
     {
-        posY += 20;
+        posY += LINE_HEIGHT;
     }
 
     if (posY > 600)
     {
-        posY = 20;
+        posY = 10;
     }
 }
