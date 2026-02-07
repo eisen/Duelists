@@ -6,7 +6,7 @@
 
 #include "Player.h"
 #include "Enemy.h"
-#include "Log.h"
+#include "CombatLog.h"
 
 enum GameStates
 {
@@ -26,11 +26,11 @@ void PlayerAttacks(Player& player, Enemy& enemy, Action& enemyAction)
     switch (enemyAction)
     {
         case Action::ATTACK:
-            Log::INFO("Both attacked! Its a clash!", false, true);
+            CombatLog::AddEntry({"Both attacked! Its a clash!", WHITE, ENTRY_SHORT_DURATION, false, true});
             break;
 
         case Action::PARRY:
-            Log::ERROR(enemy.GetName() + " parries the attack. Our hero is struck!", false, true);
+            CombatLog::AddEntry({enemy.GetName() + " parries the attack. Our hero is struck!", RED, ENTRY_SHORT_DURATION, false, true});
             if (gameState == PROCESS_INPUT)
             {
                 player.UpdateHealth(-player.GetAttackPower() * 2);
@@ -39,7 +39,7 @@ void PlayerAttacks(Player& player, Enemy& enemy, Action& enemyAction)
             break;
 
         case Action::DEFEND:
-            Log::INFO(enemy.GetName() + " is defending. The attack is less successful.", false, true);
+            CombatLog::AddEntry({enemy.GetName() + " is defending. The attack is less successful.", WHITE, ENTRY_SHORT_DURATION, false, true});
             if (gameState == PROCESS_INPUT)
             {
                 enemy.UpdateHealth(-enemy.GetAttackPower() / 2);
@@ -58,7 +58,7 @@ void PlayerParries(Player& player, Enemy& enemy, Action& enemyAction)
     switch (enemyAction)
     {
         case Action::ATTACK:
-            Log::INFO(player.GetName() + " parries the attack. The enemy is struck!", false, true);
+            CombatLog::AddEntry({player.GetName() + " parries the attack. The enemy is struck!", WHITE, ENTRY_SHORT_DURATION, false, true});
             if (gameState == PROCESS_INPUT)
             {
                 enemy.UpdateHealth(-enemy.GetAttackPower() * 2);
@@ -68,12 +68,12 @@ void PlayerParries(Player& player, Enemy& enemy, Action& enemyAction)
 
         case Action::PARRY:
             // No damage
-            Log::WARNING("Both parried! No damage dealt.", false, true);
+            CombatLog::AddEntry({"Both parried! No damage dealt.", ORANGE, ENTRY_SHORT_DURATION, false, true});
             break;
 
         case Action::DEFEND:
             // No damage
-            Log::WARNING(player.GetName() + " parried while the enemy defended. No damage dealt.", false, true);
+            CombatLog::AddEntry({player.GetName() + " parried while the enemy defended. No damage dealt.", ORANGE, ENTRY_SHORT_DURATION, false, true});
             break;
 
         case Action::NONE:
@@ -87,7 +87,7 @@ void PlayerDefends(Player& player, Enemy& enemy, Action& enemyAction)
     switch (enemyAction)
     {
     case Action::ATTACK:
-        Log::ERROR(player.GetName() + " is defending. The attack is less successful.", false, true);
+        CombatLog::AddEntry({player.GetName() + " is defending. The attack is less successful.", RED, ENTRY_SHORT_DURATION, false, true});
         if (gameState == PROCESS_INPUT)
         {
             player.UpdateHealth(-player.GetAttackPower() / 2);
@@ -97,12 +97,12 @@ void PlayerDefends(Player& player, Enemy& enemy, Action& enemyAction)
  
     case Action::PARRY:
         // No damage
-        Log::WARNING(enemy.GetName() + " parried while our hero defended. No damage dealt.", false, true);
+        CombatLog::AddEntry({enemy.GetName() + " parried while our hero defended. No damage dealt.", ORANGE, ENTRY_SHORT_DURATION, false, true});
         break;
  
     case Action::DEFEND:
         // No damage
-        Log::WARNING("Both defended! No damage dealt.", false, true);
+        CombatLog::AddEntry({"Both defended! No damage dealt.", ORANGE, ENTRY_SHORT_DURATION, false, true});
         break;
 
     case Action::NONE:
@@ -116,7 +116,8 @@ Action enemyAction;
 
 void WaitForUserToContinue(GameStates const& nextState)
 {
-    Log::INFO("Press any key to continue!");
+    DrawText("Press any key to continue!", 21, 21, 20, BLACK);
+    DrawText("Press any key to continue!", 20, 20, 20, WHITE);
 
     if (GetKeyPressed() > 0)
     {
@@ -138,8 +139,8 @@ void ProcessOutcome(Player& player, Enemy& enemy)
     }
     else if (gameState == DISPLAYING_STATUS || gameState == PROCESS_INPUT)
     {
-        Log::INFO(player.GetName() + " chose to " + ActionStrings[playerAction]);
-        Log::INFO(enemy.GetName() + " chose to " + ActionStrings[enemyAction]);
+        CombatLog::AddEntry({player.GetName() + " chose to " + ActionStrings[playerAction], WHITE, ENTRY_SHORT_DURATION});
+        CombatLog::AddEntry({enemy.GetName() + " chose to " + ActionStrings[enemyAction], WHITE, ENTRY_SHORT_DURATION, false, true});
 
         switch (playerAction)
         {
@@ -165,7 +166,7 @@ void ProcessOutcome(Player& player, Enemy& enemy)
             WaitForUserToContinue(WAITING_FOR_INPUT);
         }
         else if (enemy.IsAlive() == false) {
-            Log::INFO("You have defeated " + enemy.GetName() + "! A stronger enemy appears!");
+            CombatLog::AddEntry({"You have defeated " + enemy.GetName() + "! A stronger enemy appears!", WHITE, ENTRY_SHORT_DURATION});
             player.ResetStats();
 
             WaitForUserToContinue(FINISH_ROUND);
@@ -190,11 +191,11 @@ void ProcessOutcome(Player& player, Enemy& enemy)
     }
     else if (gameState == PLAYER_LOST)
     {
-        Log::INFO("You have been defeated! Game over!");
+        CombatLog::AddEntry({"You have been defeated! Game over!", WHITE, ENTRY_SHORT_DURATION});
     }
     else if (gameState == PLAYER_WON)
     {
-        Log::INFO("Congratulations! You have defeated all enemies!");
+        CombatLog::AddEntry({"Congratulations! You have defeated all enemies!", WHITE, ENTRY_SHORT_DURATION});
     }
 }
 
@@ -223,6 +224,8 @@ int main()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
+    CombatLog::Init();
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -238,17 +241,17 @@ int main()
         DrawTextureRec(heroSprite, heroFrameRec, (Vector2){ 150, 170 }, WHITE);
         DrawTextureRec(goblinSprite, goblinFrameRec, (Vector2){ 650 + goblinFrameRec.width, 170 }, WHITE);
 
-        Log::Init();
+        CombatLog::DrawEntryAt("------------------------------", 20, 20, WHITE);
+        CombatLog::DrawEntryAt("Welcome to the Battle Arena!", 20, 40, WHITE);
+        CombatLog::DrawEntryAt("------------------------------", 20, 60, WHITE);
 
-        Log::SEPARATOR();
-        Log::INFO("Welcome to the Battle Arena!");
-        Log::SEPARATOR();
-        Log::INFO("Round " + std::to_string(roundNumber), true, true);
-
-        Log::INFO(player.GetName() + " HP = " + std::to_string(player.GetHealth()));
-        Log::INFO(enemy.GetName() + " HP = " + std::to_string(enemy.GetHealth()), false, true);
+        CombatLog::DrawEntryAt("Round " + std::to_string(roundNumber), 20, 80, WHITE);
+        CombatLog::DrawEntryAt(player.GetName() + " HP = " + std::to_string(player.GetHealth()), 150, 160, WHITE);
+        CombatLog::DrawEntryAt(enemy.GetName() + " HP = " + std::to_string(player.GetHealth()), 650 + goblinFrameRec.width, 160, WHITE);
 
         ProcessOutcome(player, enemy);
+
+        CombatLog::ProcessLog();
 
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -257,6 +260,7 @@ int main()
     // De-Initialization
     UnloadTexture(background);
     UnloadTexture(heroSprite);
+    UnloadTexture(goblinSprite);
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------

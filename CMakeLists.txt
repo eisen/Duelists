@@ -11,7 +11,7 @@ set(SOURCES
     main.cpp
     Character.cpp
     Enemy.cpp
-    Log.cpp
+        CombatLog.cpp
     Player.cpp
 )
 
@@ -19,7 +19,7 @@ set(SOURCES
 set(HEADERS
     Character.h
     Enemy.h
-    Log.h
+        CombatLog.h
     Player.h
 )
 
